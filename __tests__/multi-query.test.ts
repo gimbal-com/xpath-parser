@@ -1,0 +1,35 @@
+import { assert, test } from 'vitest';
+
+import Parser from '../src/index';
+import htmlContent from './data/product.html';
+
+const parser = new Parser(htmlContent);
+const product = parser.multiQuery({
+  title: '//div[@id="ppd"]//span[@id="productTitle"]',
+  seller: '//div[@id="ppd"]//a[@id="bylineInfo"]',
+  price: '//div[@id="ppd"]//span[@id="priceblock_dealprice"]',
+  rating: '//div[@id="ppd"]//span[@id="acrCustomerReviewText"]',
+});
+
+test('must return an object', () => {
+  assert.strictEqual(typeof product, 'object');
+});
+
+test('must have four elements', () => {
+  assert.strictEqual(Object.keys(product).length, 4);
+});
+
+test('match the product title', () => {
+  assert.strictEqual(
+    product.title,
+    'LETSCOM Fitness Tracker HR, Activity Tracker Watch with Heart Rate Monitor, Waterproof Smart Fitness Band with Step Counter, Calorie Counter, Pedometer Watch for Kids Women and Men',
+  );
+});
+
+test('product price contains dollar sign', () => {
+  assert(product.price.includes('$'));
+});
+
+test('product rating contains numbers', () => {
+  assert(product.rating.match(/\d+/));
+});
